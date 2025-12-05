@@ -25,12 +25,12 @@ export default function Header() {
           transition={{ duration: 0.4 }}
           className="flex items-center gap-3 cursor-pointer"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00FFA3] to-[#00A3FF] shadow-md flex items-center justify-center">
+          <a href="/" className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00FFA3] to-[#00A3FF] shadow-md flex items-center justify-center">
             <span className="font-bold text-black text-lg">S</span>
-          </div>
-          <span className="font-semibold tracking-wide text-[#00FFA3] text-lg">
+          </a>
+          <a href="/" className="font-semibold tracking-wide text-[#00FFA3] text-lg">
             ScaleFlow
-          </span>
+          </a>
         </motion.div>
 
         {/* NAVIGATION */}

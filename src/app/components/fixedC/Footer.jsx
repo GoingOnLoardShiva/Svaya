@@ -13,7 +13,7 @@ import {
 
 export default function FuturisticFooter() {
   return (
-    <footer className="relative bg-gradient-to-b from-[#06070A] via-[#071028] to-[#0b0820] text-white">
+    <footer className=" bg-gradient-to-b from-[#06070A] via-[#071028] to-[#0b0820] text-white">
       {/* Top decorative SVG */}
       <div className="pointer-events-none absolute inset-x-0 -top-8 overflow-hidden">
         <svg

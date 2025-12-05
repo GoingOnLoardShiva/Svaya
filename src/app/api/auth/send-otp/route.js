@@ -1,5 +1,6 @@
 import { connectDB } from "../../../../../lib/db";
 import User from "../../../../../models/User";
+import Otp from "../../../../../models/Otp";
 import generateOtp from "../../../../../lib/otp/generateOtp";
 import sendOtpMail from "../../../../../lib/otp/sendOtpMail";
 import bcrypt from "bcryptjs";
@@ -42,18 +43,18 @@ export async function POST(req) {
         existingUser.password
       );
       if (!isMatch) {
-        return Response.json( 
+        return Response.json(
           { success: false, message: "Invalid password" },
           { status: 400 }
         );
       }
-    } 
+    }
 
     // Generate OTP
     const otp = generateOtp();
 
     // Update or create user with OTP
-    await User.updateOne(
+    await Otp.updateOne(
       { email },
       {
         otp,
