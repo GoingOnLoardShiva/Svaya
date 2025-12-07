@@ -1,21 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaFacebook, FaInstagram, FaYoutube, FaGoogle } from "react-icons/fa";
-import { MdOutlineMail, MdOutlineConnectWithoutContact } from "react-icons/md";
+import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
+import { MdOutlineMail } from "react-icons/md";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { SiReacthookform, SiGoogleforms } from "react-icons/si";
-import { ArrowBigLeft } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -27,10 +20,48 @@ export default function TabsDemo() {
   const [step, setStep] = useState(1);
   const [selectedOption, setSelectedOption] = useState(null);
 
+  // FIXED STATES
+  const [loading, setLoading] = useState(false);
+  const [manualData, setManualData] = useState(null);
+
   // When user clicks any item
   const handleSelect = (item) => {
     setSelectedOption(item);
-    setStep(2); // Go to next screen
+    setStep(2);
+  };
+
+  const [userid, setUserId] = useState("");
+
+  //get userdetails form localstorage
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("usertoken_details"));
+    if (userData) {
+      setUserId(userData.userId);
+    }
+  }, []);
+
+  // Fetch data from API when Manual button clicked
+  const handleManual = async () => {
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/user/get-link-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform: selectedOption.title,
+          id:userid,
+        }),
+      });
+
+      const data = await res.json();
+      setManualData(data);
+      setStep(3);
+    } catch (err) {
+      console.log("Fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const socialLinks = [
@@ -72,17 +103,17 @@ export default function TabsDemo() {
           </TabsTrigger>
         </TabsList>
 
-        {/* ------------------- MAIN CONTENT ------------------- */}
+        {/* ------------------- LINK TAB ------------------- */}
         <TabsContent value="Link">
           <Card className="mt-4 border rounded-xl">
             <CardHeader className="flex justify-between items-center">
               <CardTitle>Social Links</CardTitle>
 
-              {step === 2 && (
+              {(step === 2 || step === 3) && (
                 <div className="flex justify-end">
                   <button
                     className="flex items-center gap-1 text-sm text-gray-600 hover:text-black transition"
-                    onClick={() => setStep(1)}
+                    onClick={() => setStep(step - 1)}
                   >
                     Back
                     <IoIosArrowForward size={18} className="rotate-180" />
@@ -93,6 +124,7 @@ export default function TabsDemo() {
 
             <CardContent>
               <AnimatePresence mode="wait">
+                {/* STEP 1 → Select platform */}
                 {step === 1 && (
                   <motion.div
                     key="step1"
@@ -118,7 +150,7 @@ export default function TabsDemo() {
                   </motion.div>
                 )}
 
-                {/* ------------------- STEP 2 (DETAIL FORM) ------------------- */}
+                {/* STEP 2 → Manual + Connect buttons */}
                 {step === 2 && selectedOption && (
                   <motion.div
                     key="step2"
@@ -127,17 +159,55 @@ export default function TabsDemo() {
                     exit={{ opacity: 0, x: -50 }}
                     className="space-y-4"
                   >
+                    <div className="flex gap-8">
+                      <Button
+                        onClick={handleManual}
+                        className="mt-4 w-fit rounded-full border"
+                        disabled={loading}
+                      >
+                        {loading ? "Loading..." : "Manual"}
+                      </Button>
+
+                      <Button
+                        className={`mt-4 w-fit rounded-full ${selectedOption.bg} text-white hover:scale-[1.05]`}
+                      >
+                        Connect {selectedOption.title}
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* STEP 3 → Manual Fetched Data */}
+                {step === 3 && manualData && (
+                  <motion.div
+                    key="step3"
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    className="space-y-4"
+                  >
+                    <h2 className="text-lg font-semibold">
+                      {selectedOption.title} Data
+                    </h2>
+
                     <div className="grid gap-3">
-                      <div className="button-lis flex gap-8 ">
-                        <Button className="mt-4 w-fit rounded-full cursor-pointer">
-                          Manual
-                        </Button>
-                        <Button
-                          className={`mt-4 w-fit rounded-full cursor-pointer ${selectedOption.bg} hover:scale-[1.05] text-white`}
-                        >
-                          Connect {selectedOption.title}
-                        </Button>
-                      </div>
+                      <Label>Title</Label>
+                      <Input value={manualData.title} readOnly />
+
+                      <Label>Link</Label>
+                      <Input value={manualData.link} readOnly />
+
+                      <Label>Logo</Label>
+                      <Input value={manualData.logo} readOnly />
+
+                      <Label>Clicks</Label>
+                      <Input value={manualData.clicks} readOnly />
+
+                      <Label>Status</Label>
+                      <Input
+                        value={manualData.isActive ? "Active" : "Inactive"}
+                        readOnly
+                      />
                     </div>
                   </motion.div>
                 )}
@@ -146,7 +216,7 @@ export default function TabsDemo() {
           </Card>
         </TabsContent>
 
-        {/* --------------- FORM TAB ---------------- */}
+        {/* ------------------- FORM TAB ------------------- */}
         <TabsContent value="Form">
           <Card className="mt-4 border rounded-xl">
             <CardHeader>
@@ -180,7 +250,6 @@ export default function TabsDemo() {
                   </motion.div>
                 )}
 
-                {/* Step 2 Form */}
                 {step === 2 && selectedOption && (
                   <motion.div
                     key="form-step2"

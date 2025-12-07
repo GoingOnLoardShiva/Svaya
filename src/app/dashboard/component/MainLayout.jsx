@@ -1,105 +1,93 @@
-import React from "react";
-import { BiSolidEditAlt } from "react-icons/bi";
-import { MdOutlineImage } from "react-icons/md";
-import { GiNetworkBars } from "react-icons/gi";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { AiOutlineDelete } from "react-icons/ai";
+"use client";
+
+import { useEffect, useState } from "react";
+import LayoutCard from "./Layoutcard";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import ClientOnly from "./ClientOnly";
 
 export default function MainLayout() {
+  const [layouts, setLayouts] = useState([]);
+  const [userUuid, setUserUuid] = useState(null);
+
+  // get user UUID from localStorage (client-only)
+  useEffect(() => {
+    const stored = localStorage.getItem("usertoken_details");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setUserUuid(parsed.userId);
+    }
+  }, []);
+
+  // fetch layouts when userUuid is ready
+  useEffect(() => {
+    if (!userUuid) return;
+    fetchLayouts();
+  }, [userUuid]);
+
+  const fetchLayouts = async () => {
+    const res = await fetch("/api/user/get-layout-data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uuid: userUuid }),
+    });
+    const result = await res.json();
+    setLayouts(result.data || []);
+  };
+
+  const onDragEnd = async (result) => {
+    if (!result.destination) return;
+
+    const newList = Array.from(layouts);
+    const [moved] = newList.splice(result.source.index, 1);
+    newList.splice(result.destination.index, 0, moved);
+
+    setLayouts(newList);
+
+    // Update order on backend
+    const payload = newList.map((item, idx) => ({
+      layout_uid: item.layout_uid,
+      position: idx,
+    }));
+
+    await fetch("/api/user/reorder-layouts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ useruuid: userUuid, order: payload }),
+    });
+  };
+
   return (
-    <div>
-      <div className="main-layout-container">
-        <div className="f-layout-component bg-white/70 backdrop-blur-md rounded-xl flex gap-4 p-4 shadow-sm border">
-          <div className="first-icon"></div>
-          <div className="layout-details-all gap-2 flex flex-col w-full">
-            <div className="layout-details flex items-end justify-between w-full">
-              <div className="space-y-2">
-                <label className="p-0 m-0 text-red-500" htmlFor="">Youtube </label>
-                {/* Title Row */}
-                <div className="flex items-center gap-2">
-                  <span className="font-bold">Ray Prime</span>
-                  <BiSolidEditAlt className="w-4 h-4 cursor-pointer" />
-                </div>
-
-                {/* Link Row */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">
-                    http://youtube.com
-                  </span>
-                  <BiSolidEditAlt className="w-4 h-4 cursor-pointer" />
-                </div>
-              </div>
-
-              {/* Switch aligned to the right */}
-              <Switch id="airplane-mode" />
-            </div>
-
-            <div className="layout-tools flex items-center justify-between w-full">
-              <div className="layout-tools-a flex items-center gap-4">
-                <div className="logo-icon cursor-pointer">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="logo-placeholder  rounded-full w-8 h-8 flex items-center justify-center">
-                        <MdOutlineImage className="w-4 h-4 text-black" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Add Logo</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <div className="logo-icon cursor-pointer">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="logo-placeholder  rounded-full w-8 h-8 flex items-center justify-center">
-                        <MdOutlineImage className="w-4 h-4 text-black" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Add Logo</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <TooltipProvider>
-                  <div className="logo-icon cursor-pointer">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="logo-placeholder rounded-full  flex items-center justify-center gap-1 cursor-pointer">
-                          <GiNetworkBars className="w-4 h-4 text-black" />
-                          <span className="text-xs text-black">0 Click</span>
-                        </div>
-                      </TooltipTrigger>
-
-                      <TooltipContent>
-                        <p>Clicks</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                </TooltipProvider>
-              </div>
-              <div className="delete-button">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="logo-placeholder rounded-full w-8 h-8 flex items-center justify-center cursor-pointer">
-                      <AiOutlineDelete className="w-4 h-4 text-red-600" />
+    <ClientOnly>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="layouts" isDropDisabled={false}>
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="space-y-4"
+            >
+              {layouts.map((layout, index) => (
+                <Draggable
+                  key={layout.layout_uid}
+                  draggableId={layout.layout_uid.toString()}
+                  index={index}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <LayoutCard data={layout} />
                     </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Delete Link</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </ClientOnly>
   );
 }
