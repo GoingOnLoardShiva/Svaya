@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import axios from "axios";
+import ProfileRender from './ProfileRender'
 
 export default function ProfilePage() {
   const { username } = useParams(); // ✅ FIX
@@ -36,15 +37,16 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center ">
         Loading...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <div className="bg-white p-6 rounded-xl shadow-md w-[350px] text-center">
+    <div className="min-h-screen  flex justify-center  bg-gray-100 md:p-16">
+      
+      {/* <div className="bg-white p-6 rounded-xl shadow-md w-[350px] text-center">
         <img
           src={user.avatar || "/default-avatar.png"}
           className="w-24 h-24 rounded-full mx-auto"
@@ -53,7 +55,8 @@ export default function ProfilePage() {
         <h1 className="text-xl font-bold mt-4">{user.email}</h1>
         <p className="text-gray-500">@{user.username}</p>
         <p className="mt-3">{user.bio}</p>
-      </div>
+      </div> */}
+      <ProfileRender user={user}/>
     </div>
   );
 }
