@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: { type: String, default: "user" },
     category: { type: String },
+    plan:{type:String,default:"free"},
+    activeTemplateId:{type:String,default:"default"}
   },
   { timestamps: true }
 );

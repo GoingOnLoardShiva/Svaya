@@ -35,16 +35,9 @@ export default function ProfilePage() {
     fetchUser();
   }, [username, router]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center ">
-        Loading...
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen  flex justify-center  bg-gray-100 md:p-16">
+    <div className="min-h-screen  flex justify-center  bg-black md:p-16">
       
       {/* <div className="bg-white p-6 rounded-xl shadow-md w-[350px] text-center">
         <img

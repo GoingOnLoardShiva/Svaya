@@ -6,107 +6,200 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 
+/* ---------------- TABS ---------------- */
 const TABS = [
   { value: "links", label: "Links" },
-  { value: "socials", label: "Social" },
-  { value: "about", label: "About" },
+  { value: "app", label: "App" },
+  { value: "shop", label: "Shop" },
 ];
 
+/* ---------------- PLATFORM ICONS ---------------- */
+const platformIcons = {
+  Facebook: "/icons/facebook.svg",
+  Instagram: "/icons/instagram.svg",
+  Youtube: "/icons/youtube.svg",
+  Website: "/icons/link.svg",
+};
+
+/* ---------------- TEMPLATE STYLES ---------------- */
+const TEMPLATE_STYLES = {
+  default: {
+    tabsBg: "bg-white/10",
+    pill: "bg-white",
+    textActive: "text-black",
+    textInactive: "text-white/70",
+    cardBase: "bg-white/10 hover:bg-white/20",
+  },
+
+  glass: {
+    tabsBg: "bg-white/5 backdrop-blur-xl border border-white/10",
+    pill: "bg-white/30 backdrop-blur-xl",
+    textActive: "text-white",
+    textInactive: "text-white/60",
+    cardBase:
+      "bg-white/10 backdrop-blur-xl border border-white/10 hover:bg-white/20",
+  },
+
+  neon: {
+    tabsBg: "bg-black border border-pink-500/40",
+    pill: "bg-gradient-to-r from-pink-500 to-purple-600 shadow-[0_0_25px_#ec4899]",
+    textActive: "text-white",
+    textInactive: "text-pink-300",
+    cardBase:
+      "bg-black border border-pink-500/40 shadow-[0_0_15px_#ec4899] hover:shadow-[0_0_30px_#ec4899]",
+  },
+  minimal: {
+    tabsBg: "bg-white",
+    pill: "bg-black",
+    textActive: "text-white",
+    textInactive: "text-black/50",
+    cardBase: "bg-white border border-black/10 text-black hover:bg-black/5",
+    iconBg: "bg-black",
+  },
+
+  gradient: {
+    tabsBg: "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500",
+    pill: "bg-white/90",
+    textActive: "text-black",
+    textInactive: "text-white/80",
+    cardBase:
+      "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg hover:opacity-90",
+    iconBg: "bg-white",
+  },
+
+  creator: {
+    tabsBg: "bg-black border border-yellow-400",
+    pill: "bg-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.8)]",
+    textActive: "text-black",
+    textInactive: "text-yellow-300",
+    cardBase:
+      "bg-black border border-yellow-400 text-white shadow-[0_0_20px_rgba(250,204,21,0.6)] hover:shadow-[0_0_30px_rgba(250,204,21,0.9)]",
+    iconBg: "bg-yellow-400",
+  },
+
+  classic: {
+    tabsBg: "bg-gray-200",
+    pill: "bg-white shadow",
+    textActive: "text-black",
+    textInactive: "text-black/60",
+    cardBase: "bg-white border border-gray-300 text-black hover:bg-gray-50",
+    iconBg: "bg-gray-100",
+  },
+  luxury: {
+    tabsBg: "bg-yellow-400 ",
+    pill: "bg-black border border-yellow-500/40 shadow-lg",
+    textActive: "text-yellow-400",
+    textInactive: "text-yellow-400/50",
+    cardBase:
+      "bg-black border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10",
+    iconBg: "bg-yellow-500/10 text-yellow-400",
+  },
+  softpastel: {
+    tabsBg: "bg-white/60 backdrop-blur",
+    pill: "bg-white shadow-sm",
+    textActive: "text-indigo-600",
+    textInactive: "text-zinc-500",
+    cardBase:
+      "bg-white border border-zinc-200 text-zinc-800 hover:bg-indigo-50",
+    iconBg: "bg-indigo-100 text-indigo-600",
+  },
+};
+
+/* ---------------- MAIN COMPONENT ---------------- */
 export default function ProfileTabs({ user }) {
   const [active, setActive] = useState("links");
-  const [layoutData, setLayoudata] = useState([]);
-  const userIdA = user.uuid;
+  const [layoutData, setLayoutData] = useState([]);
+
+  const template =
+    TEMPLATE_STYLES[user?.activeTemplateId] || TEMPLATE_STYLES.default;
 
   useEffect(() => {
-    const getLayout = async function () {
-      const res = await axios.post("/api/layout-routes/user-get-layout-data", {
-        uuid: userIdA,
-      });
-      if (res.data) {
-        setLayoudata(res.data);
-      } else {
-        return;
+    if (!user?.uuid) return;
+
+    const getLayout = async () => {
+      try {
+        const res = await axios.post(
+          "/api/layout-routes/user-get-layout-data",
+          { uuid: user.uuid }
+        );
+        setLayoutData(res.data || []);
+      } catch (err) {
+        console.error(err);
       }
     };
+
     getLayout();
-  }, []);
+  }, [user]);
 
   return (
     <Tabs value={active} onValueChange={setActive} className="w-full">
-      {/* TAB HEADER */}
-      <div className="relative">
-        <TabsList
-          className="
-            relative w-full h-12 rounded-full
-            bg-white/5 backdrop-blur
-            p-1 flex overflow-hidden
-          "
-        >
-          {TABS.map((tab, index) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              className={cn(
-                "relative z-10 flex-1 rounded-full text-xs font-medium transition",
-                "data-[state=active]:text-black",
-                "data-[state=inactive]:text-white/70"
-              )}
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
+      {/* -------- TAB HEADER -------- */}
+      <TabsList
+        className={cn(
+          "relative h-12 w-full rounded-full p-1 flex",
+          template.tabsBg
+        )}
+      >
+        {TABS.map((tab) => (
+          <TabsTrigger
+            key={tab.value}
+            value={tab.value}
+            className={cn(
+              "relative z-10 flex-1 rounded-full text-xs font-medium transition",
+              "data-[state=active]:" + template.textActive,
+              "data-[state=inactive]:" + template.textInactive
+            )}
+          >
+            {tab.label}
+          </TabsTrigger>
+        ))}
 
-          {/* ✅ Animated Pill */}
-          <AnimatedPill active={active} />
-        </TabsList>
-      </div>
+        <AnimatedPill active={active} template={template} />
+      </TabsList>
 
-      {/* CONTENT */}
+      {/* -------- CONTENT -------- */}
       <div className="mt-6">
         <TabsContent value="links">
-          <LinksSection layoutData={layoutData} />
+          <LinksSection
+            layoutData={layoutData}
+            user={user}
+            template={template}
+          />
         </TabsContent>
-        <TabsContent value="socials">
-          <SocialSection />
+
+        <TabsContent value="app">
+          <AppSelection />
         </TabsContent>
-        <TabsContent value="about">
-          <AboutSection user={user} />
+
+        <TabsContent value="shop">
+          <AboutSection />
         </TabsContent>
       </div>
     </Tabs>
   );
 }
-function AnimatedPill({ active }) {
-  const index = active === "links" ? 0 : active === "socials" ? 1 : 2;
+
+/* ---------------- ANIMATED PILL ---------------- */
+function AnimatedPill({ active, template }) {
+  const index = active === "links" ? 0 : active === "app" ? 1 : 2;
 
   return (
     <motion.div
       layout
-      transition={{
-        type: "spring",
-        stiffness: 400,
-        damping: 30,
-      }}
-      className="
-        absolute inset-y-1
-        w-1/3
-        rounded-full
-        bg-white
-        shadow-lg
-      "
-      style={{
-        left: `calc(${index} * 100% / 3)`,
-      }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+      className={cn("absolute inset-y-1 w-1/3 rounded-full", template.pill)}
+      style={{ left: `calc(${index} * 100% / 3)` }}
     />
   );
 }
 
-function LinksSection({ layoutData }) {
-  const platformStyles = {
-    Facebook: "bg-blue-600 hover:bg-blue-700",
-    Instagram: "bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500",
-    Youtube: "bg-red-600 hover:bg-red-700",
-    Website: "bg-white/10 hover:bg-white/20",
+/* ---------------- LINKS SECTION ---------------- */
+function LinksSection({ layoutData, user, template }) {
+  const platformAccent = {
+    Facebook: "border-blue-500",
+    Instagram: "border-pink-500",
+    Youtube: "border-red-500",
+    Website: "border-white/30",
   };
 
   return (
@@ -117,42 +210,62 @@ function LinksSection({ layoutData }) {
           href={item.platform_link || "#"}
           target="_blank"
           rel="noopener noreferrer"
-          whileHover={{ scale: 1.04 }}
+          whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.96 }}
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.05 }}
-          className={`
-            block rounded-full px-6 py-3 text-center text-white font-medium
-            shadow-lg backdrop-blur-md
-            ${platformStyles[item.platform] || "bg-white/10"}
-          `}
+          className={cn(
+            "flex items-center gap-4 rounded-2xl px-4 py-3 text-white transition",
+            template.cardBase,
+            platformAccent[item.platform]
+          )}
         >
-          {item.platform_Tittle || item.platform}
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+            <img
+              src={platformIcons[item.platform]}
+              alt={item.platform}
+              className="h-5 w-5"
+            />
+          </div>
+
+          <span className="flex-1 text-sm font-medium">
+            {item.platform_Tittle || item.platform}
+          </span>
+
+          <img
+            src={user?.avatar || "/globe.svg"}
+            alt="User Avatar"
+            className="h-8 w-8 rounded-full border border-white/30 object-cover"
+          />
         </motion.a>
       ))}
     </div>
   );
 }
 
-function SocialSection() {
+/* ---------------- APP TAB ---------------- */
+function AppSelection() {
+  const apps = ["Instagram", "Twitter", "GitHub"];
+
   return (
     <div className="grid grid-cols-3 gap-3">
-      {["Instagram", "Twitter", "GitHub"].map((s, i) => (
+      {apps.map((app) => (
         <div
-          key={i}
-          className="rounded-xl bg-white/5 py-4 text-center text-xs text-white"
+          key={app}
+          className="rounded-xl bg-white/5 py-4 text-center text-xs text-white hover:bg-white/10 transition"
         >
-          {s}
+          {app}
         </div>
       ))}
     </div>
   );
 }
 
-function AboutSection({ user }) {
+/* ---------------- ABOUT TAB ---------------- */
+function AboutSection() {
   return (
-    <p className="text-sm text-white/70 text-center">
+    <p className="text-center text-sm text-white/70">
       Full-stack developer creating modern web experiences.
     </p>
   );

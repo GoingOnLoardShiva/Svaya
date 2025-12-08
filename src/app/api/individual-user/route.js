@@ -11,7 +11,7 @@ export async function POST(req) {
     await connectDB();
 
     const user = await User.findOne({ username }).select(
-      "username email uuid  category"
+      "username email uuid  category plan activeTemplateId"
     );
 
     if (!user) {

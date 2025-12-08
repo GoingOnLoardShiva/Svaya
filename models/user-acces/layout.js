@@ -7,6 +7,7 @@ const layoutSchema = new mongoose.Schema(
     layout_uid: { type: String, required: true },
     position: { type: Number, default: 0 },
     platform: { type: String, required: true },
+    avtar: { type: String },
     platform_Tittle: { type: String },
     platform_link: { type: String },
     platform_logo: { type: String },
