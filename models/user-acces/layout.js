@@ -27,6 +27,7 @@ const layoutSchema = new mongoose.Schema(
     App_Logo: { type: String },
     App_Link: { type: String },
     App_Description: { type: String },
+    App_file:{type:String},
   },
   { timestamps: true }
 );

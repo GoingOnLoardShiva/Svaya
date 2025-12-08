@@ -4,11 +4,20 @@ import ProfileTabs from "../ProfileTabs";
 export default function TemplateDefault({ user }) {
   return (
     <div className="relative bg-[#02040A] p-6 rounded-xl w-[380px] text-center overflow-hidden">
-
       {/* Background */}
-      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#ffffff0c_1px,transparent_1px),
+      <div
+        className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#ffffff0c_1px,transparent_1px),
       linear-gradient(to_bottom,#ffffff0c_1px,transparent_1px)]
-      bg-[size:60px_60px]" />
+      bg-[size:60px_60px]"
+      />
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Grid Lines */}
+        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#ffffff0c_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0c_1px,transparent_1px)] bg-[size:60px_60px]" />
+
+        {/* Neon Blobs */}
+        <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-[#00FFA3]/20 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-120px] right-[-100px] w-[450px] h-[450px] bg-[#8A00FF]/20 blur-[140px] rounded-full" />
+      </div>
 
       <div className="relative z-10 text-white">
         <div className="flex justify-between mb-4">

@@ -6,12 +6,20 @@ import { MdOutlineImage } from "react-icons/md";
 import { GiNetworkBars } from "react-icons/gi";
 import { AiOutlineDelete } from "react-icons/ai";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import { PLATFORM_CONFIG } from "./platformConfig";
 import { debounce } from "../../../../lib/debounce";
 import { isValidUrl } from "../../../../lib/validation";
 
-export default function LayoutCard({ data, onDeleted = () => {}, onUpdated = () => {} }) {
+export default function LayoutCard({
+  data,
+  onDeleted = () => {},
+  onUpdated = () => {},
+}) {
   // ✅ Initialize directly from data to match SSR
   const [editingTitle, setEditingTitle] = useState(false);
   const [editingLink, setEditingLink] = useState(false);
@@ -113,7 +121,9 @@ export default function LayoutCard({ data, onDeleted = () => {}, onUpdated = () 
     <div className={`rounded-xl p-4 shadow-sm border ${config.bg}`}>
       <div className="flex justify-between items-start">
         <div className="space-y-1">
-          <label className={`text-sm font-medium ${config.color}`}>{config.label}</label>
+          <label className={`text-sm font-medium ${config.color}`}>
+            {config.label}
+          </label>
 
           {/* Title */}
           <div className="flex items-center gap-2">
@@ -125,14 +135,33 @@ export default function LayoutCard({ data, onDeleted = () => {}, onUpdated = () 
                 onChange={(e) => setTitle(e.target.value)}
                 onBlur={onTitleBlur}
                 onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
-                className="border rounded px-2 py-1 text-sm"
+                className="
+    w-full
+    bg-transparent
+    border-0
+    border-b
+    border-gray-300
+    rounded-none
+    px-1
+    py-1
+    text-sm
+    focus:border-black
+    focus:ring-0
+    focus:outline-none
+  "
               />
             ) : (
               <>
-                <span className="font-bold cursor-pointer" onClick={() => setEditingTitle(true)}>
+                <span
+                  className="font-bold cursor-pointer"
+                  onClick={() => setEditingTitle(true)}
+                >
                   {title || "Add Title"}
                 </span>
-                <BiSolidEditAlt className="cursor-pointer w-4 h-4" onClick={() => setEditingTitle(true)} />
+                <BiSolidEditAlt
+                  className="cursor-pointer w-4 h-4"
+                  onClick={() => setEditingTitle(true)}
+                />
               </>
             )}
           </div>
@@ -147,14 +176,28 @@ export default function LayoutCard({ data, onDeleted = () => {}, onUpdated = () 
                 onChange={(e) => setLink(e.target.value)}
                 onBlur={onLinkBlur}
                 onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
-                className="border rounded px-2 py-1 text-sm w-64"
+                className="    w-full
+    bg-transparent
+    border-0
+    border-b
+    border-gray-300
+    rounded-none
+    px-1
+    py-1
+    text-sm
+    focus:border-black
+    focus:ring-0
+    focus:outline-none"
               />
             ) : (
               <>
                 <span className="cursor-pointer" onClick={onClickVisit}>
                   {link || "Add Link"}
                 </span>
-                <BiSolidEditAlt className="cursor-pointer w-4 h-4" onClick={() => setEditingLink(true)} />
+                <BiSolidEditAlt
+                  className="cursor-pointer w-4 h-4"
+                  onClick={() => setEditingLink(true)}
+                />
               </>
             )}
           </div>
@@ -174,9 +217,14 @@ export default function LayoutCard({ data, onDeleted = () => {}, onUpdated = () 
 
           <Tooltip>
             <TooltipTrigger>
-              <div className="flex items-center gap-1 cursor-pointer" onClick={onClickVisit}>
+              <div
+                className="flex items-center gap-1 cursor-pointer"
+                onClick={onClickVisit}
+              >
                 <GiNetworkBars className="w-4 h-4" />
-                <span className="text-xs">{data.platform_clicks ?? 0} Clicks</span>
+                <span className="text-xs">
+                  {data.platform_clicks ?? 0} Clicks
+                </span>
               </div>
             </TooltipTrigger>
             <TooltipContent>Clicks</TooltipContent>
@@ -184,7 +232,10 @@ export default function LayoutCard({ data, onDeleted = () => {}, onUpdated = () 
         </div>
 
         <div className="flex items-center gap-3">
-          <AiOutlineDelete className="text-red-500 cursor-pointer w-5 h-5" onClick={onDelete} />
+          <AiOutlineDelete
+            className="text-red-500 cursor-pointer w-5 h-5"
+            onClick={onDelete}
+          />
           {saving && <span className="text-xs text-gray-400">Saving...</span>}
         </div>
       </div>

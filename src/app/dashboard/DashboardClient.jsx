@@ -16,7 +16,7 @@ import {
 import ProfileDrop from "./profile/ProfileDrop";
 import { Button } from "@/components/ui//button";
 import { motion } from "framer-motion";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -27,6 +27,7 @@ import {
   ShoppingBag,
   TrendingUp,
   Megaphone,
+  AppWindow,
 } from "lucide-react";
 import { MdElectricBolt } from "react-icons/md";
 import axios from "axios";
@@ -36,14 +37,11 @@ export default function DashboardLayout({ children }) {
 
   const menuItems = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
-    { name: "Products", href: "/dashboard/product", icon: Box },
-    { name: "Customers", href: "/customers", icon: Users },
-    { name: "Shop", href: "/shop", icon: ShoppingBag },
-    { name: "Income", href: "/income", icon: TrendingUp },
-    { name: "Promote", href: "/promote", icon: Megaphone },
+    { name: "Add Apps", href: "/dashboard/app", icon: AppWindow },
+    { name: "Shop", href: "/dashboard/product", icon: ShoppingBag },
+    { name: "Income", href: "/dashboard/income", icon: TrendingUp },
+    { name: "Promote", href: "/dashboard/promote", icon: Megaphone },
   ];
-
-
 
   return (
     <SidebarProvider>
@@ -83,7 +81,7 @@ export default function DashboardLayout({ children }) {
             {/* 👇 Move logout to bottom using mt-auto */}
             <SidebarFooter className="mt-auto mb-4 px-4">
               {/* <Button onClick={handleLogout} className="w-full">Logout</Button> */}
-              <ProfileDrop/>
+              <ProfileDrop />
             </SidebarFooter>
           </SidebarContent>
         </Sidebar>
@@ -112,7 +110,8 @@ export default function DashboardLayout({ children }) {
             </div>
           </header>
 
-          <div className="p-4">{children}</div>
+          <div className="p-4">
+            {children}</div>
         </main>
       </div>
     </SidebarProvider>

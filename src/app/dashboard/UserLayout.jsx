@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import MainLayout from "./component/MainLayout";
+import PreviewPhone from "./component/PreviewPhone";
 
 export default function Layout() {
   const [open, setOpen] = React.useState(false);
@@ -125,27 +126,10 @@ export default function Layout() {
         {/* PHONE PREVIEW */}
         <div className="preview-component hidden md:flex justify-center md:justify-end w-full">
           <div className="preview-main-componenet">
-            <div className="preview-text flex justify-between px-10">
-              <span>Preview</span>
-              <RefreshCcw className="w-5 h-5 text-gray-600" />
-            </div>
 
-            <div className="preview-img relative max-w-[300px]">
-              <img src="/i-phone15.png" className="w-full relative z-20" />
-
-              <div className="content absolute inset-0 z-10">
-                <div
-                  className="screen-content absolute top-[10px] left-[32px]
-                  w-[235px] h-[600px] bg-white overflow-hidden rounded-3xl p-4"
-                >
-                  <h2 className="text-center text-xl font-semibold">
-                    User Dashboard Preview
-                  </h2>
-                  <p className="text-center mt-4 text-gray-600">
-                    Dashboard mobile preview example.
-                  </p>
-                </div>
-              </div>
+            {/* Phone */}
+            <div className="preview-img  max-w-[350px]">
+              <PreviewPhone username={username}/>
             </div>
           </div>
         </div>
