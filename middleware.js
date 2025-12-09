@@ -6,7 +6,7 @@ export function middleware(req) {
 
   // If no token → redirect to login
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/enrry/login", req.url));
   }
 
   try {
@@ -15,7 +15,7 @@ export function middleware(req) {
     return NextResponse.next(); // allow
   } catch (error) {
     // Invalid token → force logout
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/entry/login", req.url));
   }
 }
 
