@@ -85,7 +85,8 @@ export default function LoginPage() {
         return;
       }
 
-      document.cookie = `userToken=${data.token}; path=/;`;
+      document.cookie = `userToken=${data.token}; path=/; SameSite=Lax`;
+
       router.push("/dashboard");
     } catch (err) {
       setError("Server error");
