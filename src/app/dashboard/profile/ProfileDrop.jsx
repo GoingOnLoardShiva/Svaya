@@ -12,7 +12,7 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings, BadgeCheck, User } from "lucide-react";
-
+import axios from "axios";
 export default function ProfileDropdown({ children }) {
   const [username, setUsername] = useState("");
 
